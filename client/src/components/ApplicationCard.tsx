@@ -2,15 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import StatusBadge, { ApplicationStatus } from "./StatusBadge";
 import { Calendar, MapPin, User } from "lucide-react";
+import { type Application } from "@shared/schema";
 
-export interface Application {
-  id: string;
-  referenceNumber: string;
-  applicantName: string;
-  propertyAddress: string;
-  submittedDate: string;
-  status: ApplicationStatus;
-}
+export type { Application };
 
 interface ApplicationCardProps {
   application: Application;
@@ -36,10 +30,10 @@ export default function ApplicationCard({
           </CardTitle>
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <User className="h-3.5 w-3.5" />
-            <span data-testid="text-applicant-name">{application.applicantName}</span>
+            <span data-testid="text-applicant-name">{application.fullName}</span>
           </div>
         </div>
-        <StatusBadge status={application.status} />
+        <StatusBadge status={application.status as ApplicationStatus} />
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="space-y-2 text-sm">
@@ -49,7 +43,9 @@ export default function ApplicationCard({
           </div>
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Calendar className="h-3.5 w-3.5" />
-            <span data-testid="text-submitted-date">{application.submittedDate}</span>
+            <span data-testid="text-submitted-date">
+              {new Date(application.submittedDate).toLocaleDateString()}
+            </span>
           </div>
         </div>
         

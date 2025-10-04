@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import TrackingForm from "@/components/TrackingForm";
 import ApplicationCard, { Application } from "@/components/ApplicationCard";
@@ -6,51 +7,25 @@ import ApplicationTimeline from "@/components/ApplicationTimeline";
 import CertificatePreview from "@/components/CertificatePreview";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { type ApplicationStatus } from "@/components/StatusBadge";
 
 export default function Track() {
-  const [searchedApplication, setSearchedApplication] = useState<Application | null>(null);
-  const [notFound, setNotFound] = useState(false);
+  const [referenceNumber, setReferenceNumber] = useState("");
+  const [searchAttempted, setSearchAttempted] = useState(false);
 
-  const handleSearch = (referenceNumber: string) => {
-    //todo: remove mock functionality
-    const mockApplications: Application[] = [
-      {
-        id: "1",
-        referenceNumber: "RCC-2025-123456",
-        applicantName: "Tendai Moyo",
-        propertyAddress: "123 Robert Mugabe Avenue, Masvingo",
-        submittedDate: "2025-01-15",
-        status: "approved",
-      },
-      {
-        id: "2",
-        referenceNumber: "RCC-2025-234567",
-        applicantName: "Rudo Ncube",
-        propertyAddress: "456 Josiah Tongogara Street, Masvingo",
-        submittedDate: "2025-01-18",
-        status: "under_review",
-      },
-      {
-        id: "3",
-        referenceNumber: "RCC-2025-345678",
-        applicantName: "Chenai Mashoko",
-        propertyAddress: "789 Simon Mazorodze Road, Masvingo",
-        submittedDate: "2025-01-20",
-        status: "submitted",
-      },
-    ];
+  const { data: application, isLoading, error } = useQuery<Application>({
+    queryKey: ["/api/applications/track", referenceNumber],
+    enabled: searchAttempted && !!referenceNumber,
+    retry: false,
+  });
 
-    const found = mockApplications.find(
-      app => app.referenceNumber.toLowerCase() === referenceNumber.toLowerCase()
-    );
+  const handleSearch = (ref: string) => {
+    setReferenceNumber(ref);
+    setSearchAttempted(true);
+  };
 
-    if (found) {
-      setSearchedApplication(found);
-      setNotFound(false);
-    } else {
-      setSearchedApplication(null);
-      setNotFound(true);
-    }
+  const formatDate = (date: string | Date) => {
+    return new Date(date).toLocaleDateString("en-GB");
   };
 
   return (
@@ -69,38 +44,40 @@ export default function Track() {
         <div className="space-y-6">
           <TrackingForm onSearch={handleSearch} />
 
-          {notFound && (
+          {isLoading && (
+            <Alert>
+              <AlertDescription>Searching for your application...</AlertDescription>
+            </Alert>
+          )}
+
+          {searchAttempted && error && !isLoading && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 Application not found. Please check your reference number and try again.
-                <br />
-                <span className="text-xs mt-1 block">
-                  Try: RCC-2025-123456, RCC-2025-234567, or RCC-2025-345678
-                </span>
               </AlertDescription>
             </Alert>
           )}
 
-          {searchedApplication && (
+          {application && (
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="space-y-6">
-                <ApplicationCard application={searchedApplication} />
+                <ApplicationCard application={application} />
                 <ApplicationTimeline 
-                  status={searchedApplication.status}
-                  submittedDate={searchedApplication.submittedDate}
-                  reviewDate={searchedApplication.status !== "submitted" ? "2025-01-16" : undefined}
-                  completedDate={searchedApplication.status === "approved" ? "2025-01-20" : undefined}
+                  status={application.status as ApplicationStatus}
+                  submittedDate={formatDate(application.submittedDate)}
+                  reviewDate={application.reviewDate ? formatDate(application.reviewDate) : undefined}
+                  completedDate={application.completedDate ? formatDate(application.completedDate) : undefined}
                 />
               </div>
 
-              {searchedApplication.status === "approved" && (
+              {application.status === "approved" && (
                 <div className="lg:sticky lg:top-24 h-fit">
                   <CertificatePreview
-                    referenceNumber={searchedApplication.referenceNumber}
-                    applicantName={searchedApplication.applicantName}
-                    propertyAddress={searchedApplication.propertyAddress}
-                    approvalDate="2025-01-20"
+                    referenceNumber={application.referenceNumber}
+                    applicantName={application.fullName}
+                    propertyAddress={application.propertyAddress}
+                    approvalDate={application.completedDate ? formatDate(application.completedDate) : ""}
                     onDownload={() => console.log("Download certificate")}
                   />
                 </div>

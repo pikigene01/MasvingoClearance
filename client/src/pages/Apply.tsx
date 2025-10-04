@@ -1,22 +1,44 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import Header from "@/components/Header";
 import ApplicationForm from "@/components/ApplicationForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Apply() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
   const [referenceNumber, setReferenceNumber] = useState("");
 
+  const submitMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await apiRequest("POST", "/api/applications", data);
+      return await response.json();
+    },
+    onSuccess: (data: any) => {
+      setReferenceNumber(data.referenceNumber);
+      setSubmitted(true);
+      toast({
+        title: "Application Submitted",
+        description: "Your application has been submitted successfully.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Submission Failed",
+        description: error.message || "Failed to submit application. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSubmit = (data: any) => {
-    //todo: remove mock functionality
-    const mockReferenceNumber = `RCC-2025-${Math.floor(Math.random() * 900000 + 100000)}`;
-    setReferenceNumber(mockReferenceNumber);
-    setSubmitted(true);
-    console.log("Application submitted:", data);
+    submitMutation.mutate(data);
   };
 
   if (submitted) {

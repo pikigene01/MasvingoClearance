@@ -4,10 +4,20 @@ export default function ApplicationCardExample() {
   const application = {
     id: "1",
     referenceNumber: "RCC-2025-001234",
-    applicantName: "Tendai Moyo",
+    fullName: "Tendai Moyo",
+    idNumber: "63-123456X78",
+    phoneNumber: "+263 77 123 4567",
+    email: "tendai@example.com",
     propertyAddress: "123 Robert Mugabe Avenue, Masvingo",
-    submittedDate: "2025-01-15",
-    status: "under_review" as const,
+    standNumber: "12345",
+    propertyType: "residential",
+    reason: "Property sale",
+    status: "under_review",
+    submittedDate: new Date("2025-01-15"),
+    reviewDate: new Date("2025-01-16"),
+    completedDate: null,
+    adminNotes: null,
+    reviewedBy: null,
   };
 
   return (

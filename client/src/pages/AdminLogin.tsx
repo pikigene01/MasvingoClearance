@@ -1,18 +1,49 @@
+import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import Header from "@/components/Header";
 import AdminLoginForm from "@/components/AdminLoginForm";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  // Check if already logged in
+  const { data: session } = useQuery<{ authenticated: boolean }>({
+    queryKey: ["/api/admin/session"],
+  });
+
+  useEffect(() => {
+    if (session?.authenticated) {
+      setLocation("/admin/dashboard");
+    }
+  }, [session, setLocation]);
+
+  const loginMutation = useMutation({
+    mutationFn: async (credentials: { username: string; password: string }) => {
+      const response = await apiRequest("POST", "/api/admin/login", credentials);
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Login Successful",
+        description: "Welcome to the admin dashboard.",
+      });
+      setLocation("/admin/dashboard");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Login Failed",
+        description: error.message || "Invalid credentials. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleLogin = (data: any) => {
-    //todo: remove mock functionality
-    console.log("Admin login:", data);
-    if (data.username === "admin" && data.password === "admin123") {
-      setLocation("/admin/dashboard");
-    } else {
-      alert("Invalid credentials. Try: admin / admin123");
-    }
+    loginMutation.mutate(data);
   };
 
   return (
