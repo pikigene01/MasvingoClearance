@@ -59,7 +59,7 @@ export default function ApplicationCard({
             >
               View Details
             </Button>
-            {application.status === "under_review" && (
+            {(application.status === "submitted" || application.status === "under_review") && (
               <>
                 <Button 
                   size="sm" 

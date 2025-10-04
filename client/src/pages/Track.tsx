@@ -15,6 +15,15 @@ export default function Track() {
 
   const { data: application, isLoading, error } = useQuery<Application>({
     queryKey: ["/api/applications/track", referenceNumber],
+    queryFn: async () => {
+      const res = await fetch(`/api/applications/track/${referenceNumber}`, {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        throw new Error(`${res.status}: ${res.statusText}`);
+      }
+      return await res.json();
+    },
     enabled: searchAttempted && !!referenceNumber,
     retry: false,
   });

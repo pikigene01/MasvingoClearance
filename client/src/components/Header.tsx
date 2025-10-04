@@ -13,53 +13,43 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b bg-card">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/">
-            <a className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md -ml-3" data-testid="link-home">
-              <Building2 className="h-8 w-8 text-primary" />
-              <div className="flex flex-col">
-                <span className="font-heading font-bold text-base leading-tight">Masvingo City Council</span>
-                <span className="text-xs text-muted-foreground">Rate Clearance System</span>
-              </div>
-            </a>
+          <Link href="/" className="flex items-center gap-3 hover-elevate active-elevate-2 px-3 py-2 rounded-md -ml-3" data-testid="link-home">
+            <Building2 className="h-8 w-8 text-primary" />
+            <div className="flex flex-col">
+              <span className="font-heading font-bold text-base leading-tight">Masvingo City Council</span>
+              <span className="text-xs text-muted-foreground">Rate Clearance System</span>
+            </div>
           </Link>
 
           <nav className="hidden md:flex items-center gap-2">
-            <Link href="/">
-              <a data-testid="link-nav-home">
-                <Button 
-                  variant={isActive("/") ? "secondary" : "ghost"}
-                  className={isActive("/") ? "toggle-elevate toggle-elevated" : ""}
-                >
-                  Home
-                </Button>
-              </a>
+            <Link href="/" data-testid="link-nav-home">
+              <Button 
+                variant={isActive("/") ? "secondary" : "ghost"}
+                className={isActive("/") ? "toggle-elevate toggle-elevated" : ""}
+              >
+                Home
+              </Button>
             </Link>
-            <Link href="/apply">
-              <a data-testid="link-nav-apply">
-                <Button 
-                  variant={isActive("/apply") ? "secondary" : "ghost"}
-                  className={isActive("/apply") ? "toggle-elevate toggle-elevated" : ""}
-                >
-                  Apply
-                </Button>
-              </a>
+            <Link href="/apply" data-testid="link-nav-apply">
+              <Button 
+                variant={isActive("/apply") ? "secondary" : "ghost"}
+                className={isActive("/apply") ? "toggle-elevate toggle-elevated" : ""}
+              >
+                Apply
+              </Button>
             </Link>
-            <Link href="/track">
-              <a data-testid="link-nav-track">
-                <Button 
-                  variant={isActive("/track") ? "secondary" : "ghost"}
-                  className={isActive("/track") ? "toggle-elevate toggle-elevated" : ""}
-                >
-                  Track Application
-                </Button>
-              </a>
+            <Link href="/track" data-testid="link-nav-track">
+              <Button 
+                variant={isActive("/track") ? "secondary" : "ghost"}
+                className={isActive("/track") ? "toggle-elevate toggle-elevated" : ""}
+              >
+                Track Application
+              </Button>
             </Link>
-            <Link href="/admin">
-              <a data-testid="link-nav-admin">
-                <Button variant="outline">
-                  Admin Login
-                </Button>
-              </a>
+            <Link href="/admin" data-testid="link-nav-admin">
+              <Button variant="outline">
+                Admin Login
+              </Button>
             </Link>
           </nav>
 
@@ -76,49 +66,41 @@ export default function Header() {
 
         {mobileMenuOpen && (
           <nav className="md:hidden py-4 space-y-2 border-t" data-testid="nav-mobile-menu">
-            <Link href="/">
-              <a className="block" data-testid="link-mobile-home">
-                <Button 
-                  variant={isActive("/") ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Home
-                </Button>
-              </a>
+            <Link href="/" className="block" data-testid="link-mobile-home">
+              <Button 
+                variant={isActive("/") ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Home
+              </Button>
             </Link>
-            <Link href="/apply">
-              <a className="block" data-testid="link-mobile-apply">
-                <Button 
-                  variant={isActive("/apply") ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Apply
-                </Button>
-              </a>
+            <Link href="/apply" className="block" data-testid="link-mobile-apply">
+              <Button 
+                variant={isActive("/apply") ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Apply
+              </Button>
             </Link>
-            <Link href="/track">
-              <a className="block" data-testid="link-mobile-track">
-                <Button 
-                  variant={isActive("/track") ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Track Application
-                </Button>
-              </a>
+            <Link href="/track" className="block" data-testid="link-mobile-track">
+              <Button 
+                variant={isActive("/track") ? "secondary" : "ghost"}
+                className="w-full justify-start"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Track Application
+              </Button>
             </Link>
-            <Link href="/admin">
-              <a className="block" data-testid="link-mobile-admin">
-                <Button 
-                  variant="outline"
-                  className="w-full justify-start"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Admin Login
-                </Button>
-              </a>
+            <Link href="/admin" className="block" data-testid="link-mobile-admin">
+              <Button 
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Admin Login
+              </Button>
             </Link>
           </nav>
         )}
