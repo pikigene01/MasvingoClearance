@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
+  const navigate = useLocation()[1];
   const { toast } = useToast();
 
   // Check if already logged in
@@ -17,9 +18,10 @@ export default function AdminLogin() {
 
   useEffect(() => {
     if (session?.authenticated) {
+      navigate("/admin/dashboard");
       setLocation("/admin/dashboard");
     }
-  }, [session, setLocation]);
+  }, [session, setLocation, navigate]);
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
@@ -31,7 +33,8 @@ export default function AdminLogin() {
         title: "Login Successful",
         description: "Welcome to the admin dashboard.",
       });
-      setLocation("/admin/dashboard");
+      navigate("/admin/dashboard");
+      window.location.reload();
     },
     onError: (error: any) => {
       toast({
