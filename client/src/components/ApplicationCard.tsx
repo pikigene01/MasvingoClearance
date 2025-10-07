@@ -125,8 +125,8 @@ export default function ApplicationCard({
           {application?.adminNotes && (
             <>
               <div className="flex items-start gap-1.5 text-muted-foreground">
-                <Inbox className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" /> Rejected
-                With Notes
+                <Inbox className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                 Reason For Rejection:
                 <b>
                   <span data-testid="text-property-address">
                     {application.adminNotes}
