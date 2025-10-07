@@ -11,8 +11,10 @@ export interface IStorage {
     id: string, 
     status: "submitted" | "under_review" | "approved" | "rejected",
     reviewedBy?: string,
-    adminNotes?: string
+    adminNotes?: string,
+    reason?: string
   ): Promise<Application | undefined>;
+  attachDocuments(id: string, documents: string[]): Promise<Application | undefined>; // <-- Added
   
   // Admin operations
   getAdmin(id: string): Promise<Admin | undefined>;
@@ -55,6 +57,7 @@ export class MemStorage implements IStorage {
       completedDate: null,
       adminNotes: null,
       reviewedBy: null,
+      documents: insertApplication.documents || [], // <-- Add documents field
     };
     
     this.applications.set(id, application);
@@ -81,7 +84,8 @@ export class MemStorage implements IStorage {
     id: string,
     status: "submitted" | "under_review" | "approved" | "rejected",
     reviewedBy?: string,
-    adminNotes?: string
+    adminNotes?: string,
+    reason?: string,
   ): Promise<Application | undefined> {
     const application = this.applications.get(id);
     if (!application) return undefined;
@@ -92,10 +96,26 @@ export class MemStorage implements IStorage {
       status,
       reviewedBy: reviewedBy || application.reviewedBy,
       adminNotes: adminNotes || application.adminNotes,
+      reason: reason || application.reason,
       reviewDate: application.reviewDate || now,
       completedDate: (status === "approved" || status === "rejected") ? now : application.completedDate,
     };
 
+    this.applications.set(id, updatedApplication);
+    return updatedApplication;
+  }
+
+  async attachDocuments(id: string, documents: string[]): Promise<Application | undefined> {
+    const application = this.applications.get(id);
+    if (!application) return undefined;
+    const updatedApplication: Application = {
+      ...application,
+      documents: [...(application.documents || []), ...documents],
+      status: "under_review", // Update status to under_review when documents are attached
+      reviewDate: application.reviewDate || new Date(),
+      reason: '',
+      adminNotes: '',
+    };
     this.applications.set(id, updatedApplication);
     return updatedApplication;
   }

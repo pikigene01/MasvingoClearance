@@ -18,7 +18,8 @@ export const applications = pgTable("applications", {
   standNumber: text("stand_number").notNull(),
   propertyType: text("property_type").notNull(), // residential, commercial, industrial
   reason: text("reason").notNull(),
-  
+  documents: text("documents").array().default(sql`ARRAY[]::text[]`), // <-- Added
+  uploadedDocuments: text("uploaded_documents").array().default(sql`ARRAY[]::text[]`), // <-- Added
   // Application Status
   status: text("status").notNull().default("submitted"), // submitted, under_review, approved, rejected
   
@@ -49,6 +50,8 @@ export const insertApplicationSchema = createInsertSchema(applications).pick({
   standNumber: true,
   propertyType: true,
   reason: true,
+  documents: true, // <-- Added
+  uploadedDocuments: true, // <-- Added
 });
 
 export const insertAdminSchema = createInsertSchema(admins).pick({

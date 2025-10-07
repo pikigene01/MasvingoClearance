@@ -46,11 +46,11 @@ export default function Header() {
                 Track Application
               </Button>
             </Link>
-            <Link href="/admin" data-testid="link-nav-admin">
+            <a href="/admin" data-testid="link-nav-admin">
               <Button variant="outline">
                 Admin Login
               </Button>
-            </Link>
+            </a>
           </nav>
 
           <Button

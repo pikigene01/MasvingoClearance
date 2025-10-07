@@ -74,6 +74,7 @@ export default function Track() {
                 <ApplicationCard application={application} />
                 <ApplicationTimeline 
                   status={application.status as ApplicationStatus}
+                  adminNotes={application.adminNotes as string | undefined}
                   submittedDate={formatDate(application.submittedDate)}
                   reviewDate={application.reviewDate ? formatDate(application.reviewDate) : undefined}
                   completedDate={application.completedDate ? formatDate(application.completedDate) : undefined}
