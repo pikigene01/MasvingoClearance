@@ -1,3 +1,58 @@
+import crypto from "crypto";
+
+// Simple Blockchain Audit Log
+class AuditBlock {
+  constructor(
+    public index: number,
+    public timestamp: string,
+    public action: string,
+    public data: any,
+    public previousHash: string
+  ) {
+    this.hash = this.computeHash();
+  }
+  hash: string;
+  computeHash() {
+    return crypto.createHash("sha256")
+      .update(this.index + this.timestamp + this.action + JSON.stringify(this.data) + this.previousHash)
+      .digest("hex");
+  }
+}
+
+class AuditBlockchain {
+  chain: AuditBlock[] = [];
+  constructor() {
+    // Genesis block
+    this.chain.push(new AuditBlock(0, new Date().toISOString(), "GENESIS", {}, "0"));
+  }
+  getLastBlock() {
+    return this.chain[this.chain.length - 1];
+  }
+  addBlock(action: string, data: any) {
+    const prev = this.getLastBlock();
+    const block = new AuditBlock(
+      prev.index + 1,
+      new Date().toISOString(),
+      action,
+      data,
+      prev.hash
+    );
+    this.chain.push(block);
+    return block;
+  }
+  verifyChain() {
+    for (let i = 1; i < this.chain.length; i++) {
+      const block = this.chain[i];
+      const prev = this.chain[i - 1];
+      if (block.previousHash !== prev.hash || block.hash !== block.computeHash()) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+const auditLog = new AuditBlockchain();
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -24,19 +79,32 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
       if (logLine.length > 80) {
         logLine = logLine.slice(0, 79) + "…";
       }
-
       log(logLine);
+      // Blockchain audit log
+      auditLog.addBlock("API_CALL", {
+        method: req.method,
+        path,
+        status: res.statusCode,
+        duration,
+        response: capturedJsonResponse
+      });
     }
   });
-
   next();
 });
 
+// Expose audit log endpoint for admins
 (async () => {
+  app.get("/api/audit-log", (req, res) => {
+    res.json({
+      chain: auditLog.chain,
+      valid: auditLog.verifyChain()
+    });
+  });
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
